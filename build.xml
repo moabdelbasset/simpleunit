@@ -1,0 +1,65 @@
+
+<project name="SimpleJUnit" default="all">
+  <property name="src-dir" location="src/main/java" />
+  <property name="test.src" location="src/test/java" />
+  <property name="TALK" value="true" />
+  <property name="app.build" location="build/app"/>
+  <property name="test.build" location="build/test"/>
+  <property name="test.result" location="${test.build}"/>
+  <property name="junit.jar" location="/usr/share/java/junit.jar" />
+  
+<!--  <path id="classpath.base">
+  </path>
+  <path id="classpath.test">
+    <pathelement location="/usr/share/java/junit.jar" />
+    <pathelement location="${tst-dir}" />
+    <path refid="classpath.base" />
+  </path>
+-->  
+    <path id="build.classpath">
+        <pathelement path="${junit.jar}"/>
+        <pathelement path="${app.build}"/> 
+    </path>
+
+    <path id="testbuild.classpath">
+        <path refid="build.classpath"/>
+        <pathelement path="${test.build}"/>
+    </path>
+
+  <target name="compile-test">
+    <mkdir dir="${test.build}" />
+    <javac srcdir="${test.src}"
+           verbose="${TALK}" 
+           destdir="${test.build}">
+      <classpath refid="testbuild.classpath"/>
+    </javac>
+  </target>
+  
+  <target name="clean-compile-test">
+    <delete verbose="${TALK}" dir="build"/>
+  </target>
+
+  <target name="test" depends="compile-test">
+    <sleep seconds="3"/>
+    <junit fork="true" printsummary="yes" showoutput="true">
+      <classpath refid="testbuild.classpath" />
+      <formatter type="xml" />
+	  
+      <batchtest todir="${test.result}">
+            <fileset dir="${test.src}" includes="**/*Test*.java"/>
+        </batchtest>
+      <!-- <test name="TestExample" /> -->
+    </junit>
+	<!--
+    <junitreport todir="reports">
+        <fileset dir="reports/xml">
+            <include name="*.xml"/>
+        </fileset>
+        <report format="frames" todir="reports/html"/> 
+    </junitreport> -->
+  </target>
+
+  <target name="all" depends="test" />
+  <target name="clean" depends="clean-compile-test" />
+</project>
+
